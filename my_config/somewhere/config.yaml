@@ -1,0 +1,10 @@
+name: "test name"
+test_list:
+  - "a"
+  - "b"
+  - "c"
+  - "d"
+  - "e"
+test_obj:
+  name: "obj name"
+  quantity: 12
