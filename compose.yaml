@@ -1,0 +1,13 @@
+services:
+  app:
+    image: test_dynaconf:latest
+    container_name: test_dynaconf_container
+    volumes:
+      - ./.secrets.toml:/etc/secret-volume/.secrets.toml
+    environment:
+      SECRETS_PATH: "/etc/secret-volume/" # Ref: https://kubernetes.io/docs/concepts/configuration/secret/
+      TEST_STR: "str from env"
+      TEST_NUM: 2000
+      TEST_LIST: '@json ["env_a", "env_b"]'
+      TEST_OBJ__NAME: "env new name"
+      TEST_OBJ__QUANTITY: 2000

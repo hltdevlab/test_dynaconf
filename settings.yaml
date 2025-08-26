@@ -1,0 +1,8 @@
+test_str: "some test str at yaml file."
+test_num: 1000
+test_list:
+  - "yaml_a"
+  - "yaml_b"
+test_obj:
+  name: "yaml name"
+  quantity: 1000
