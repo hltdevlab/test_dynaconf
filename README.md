@@ -84,3 +84,17 @@ test_list: ['env_a', 'env_b'] | <class 'dynaconf.vendor.box.box_list.BoxList'>
 test_obj: {'quantity': 2000, 'name': 'env new name'} | <class 'dynaconf.utils.boxing.DynaBox'>
 MY_SECRET: my so called top secret.... | <class 'str'>
 ```
+
+---
+
+Exploring writing Dockerfile.
+
+- debian:stable-slim
+  - 863.4MB - 14 layers
+  - 571.71MB - 11 layers
+
+Reducing layers makes image smaller.
+
+If application does not need other additional tools, using alpine is good, ~<100MB image.
+
+If application does need other additional tools that needed glibc, avoid using alpine as its musl based. Use glibc-based distro instead, eg. debian:stable-slim

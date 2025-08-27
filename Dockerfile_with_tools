@@ -1,0 +1,58 @@
+# docker build -f Dockerfile_with_tools -t test_dynaconf:with_tools .
+
+
+# --- Builder ---
+FROM python:3.10.11 AS builder
+WORKDIR /app
+COPY . /app
+
+# Install dependencies and build application
+RUN python -m pip install -r requirements.txt
+RUN python -m pip install pyinstaller
+RUN pyinstaller --onefile --name app.exe main.py
+# ===
+
+
+# --- Downloader ---
+FROM alpine:latest AS downloader
+WORKDIR /installers
+RUN wget https://ftp.mozilla.org/pub/firefox/releases/142.0.1/linux-x86_64/en-US/firefox-142.0.1.tar.xz
+# ===
+
+
+# Avoid using musl based distro if glibc is needed. Use glibc-based distro instead.
+
+# FROM alpine:latest
+# FROM frolvlad/alpine-glibc:latest
+FROM debian:stable-slim
+
+
+# Firefox Installation
+ENV DISPLAY=:99
+RUN apt update && apt install -y --no-install-recommends \
+    xz-utils \
+    libgtk-3-0 \
+    libx11-xcb1 \
+    libdbus-glib-1-2 \
+    libxt6 \
+    libasound2 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /installers
+
+COPY --from=downloader /installers/firefox-142.0.1.tar.xz .
+RUN tar xvf firefox-*.tar.xz \
+    && mv firefox /opt \
+    && ln -s /opt/firefox/firefox /usr/local/bin/firefox \
+    && rm -rf firefox-142.0.1.tar.xz
+# ===
+
+# Set a working directory inside the container
+WORKDIR /app
+
+COPY --from=builder /app/settings.yaml .
+COPY --from=builder /app/dist/app.exe .
+RUN chmod +x app.exe
+
+# Define the command to run your application when the container starts
+CMD ["./app.exe"]
